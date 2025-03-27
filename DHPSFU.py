@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 # Paths and extension names
-path = r'D:\DHPSFU\2025-02-04_Final\AP\Loc10' # path containing all peak-fit localisation data.
+path = r'D:\DHPSFU\Data\Loc10' # path containing all peak-fit localisation data.
 ext = r'.xls' # Extension of data file (.xls for GDSC SMLM)
-calib_name = r"D:\DHPSFU\2025-02-04_Final\AP\Calib.xls" # calibration file name
+calib_name = r"D:\DHPSFU\Data\Calib.xls" # calibration file name
 
 
 # General parameters
@@ -240,9 +240,14 @@ def DH_analysis(data_name, general_paras, fitting_paras, filter_paras):
     Intensity_arr = np.concatenate(Intensity)
     
     zN = np.polyval(fitting_paras[2], Angle_arr) # Calculate all Z values of fluorophores in data using their angles
-    xN = (X_arr - np.polyval(fitting_paras[0], zN)) * general_paras[0] # Calibrate X by Z, convert into nm    
-    yN = (Y_arr - np.polyval(fitting_paras[1], zN)) * general_paras[0] # Calibrate Y by Z, convert into nm
- 
+    #xN = (X_arr - np.polyval(fitting_paras[0], zN)) * general_paras[0] # Calibrate X by Z, convert into nm    
+    #yN = (Y_arr - np.polyval(fitting_paras[1], zN)) * general_paras[0] # Calibrate Y by Z, convert into nm
+    
+    zmin = np.polyval(fitting_paras[2], fitting_paras[5][0]) # Minimum angle from calibration
+    zN = np.polyval(fitting_paras[2], Angle_arr) # Calculate all Z values of fluorophores in data using their angles
+    xN = (X_arr - (np.polyval(fitting_paras[0], zN) - np.polyval(fitting_paras[0], zmin) )) * general_paras[0] # Calibrate X by Z, convert into nm
+    yN = (Y_arr - (np.polyval(fitting_paras[1], zN) - np.polyval(fitting_paras[1], zmin) )) * general_paras[0] # Calibrate Y by Z, convert into nm
+    
     
     marker = np.ones((len(Frame_arr), 1))
     if filter_paras[0]:
